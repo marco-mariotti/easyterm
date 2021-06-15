@@ -1,4 +1,4 @@
-__all__=['write', 'printerr', 'service', 'set_logfile', 'set_markup_keywords', 'set_markup_usage', 'flush_service']
+__all__=['write', 'printerr', 'service', 'set_logfile', 'set_markup_keywords', 'set_markup_usage', 'flush_service', 'markup_codes']
 import sys
 
 terminal_codes={'':'\033[0m', 'red':'\033[31m', 'green':'\033[32m',
@@ -6,6 +6,7 @@ terminal_codes={'':'\033[0m', 'red':'\033[31m', 'green':'\033[32m',
                 'magenta':'\033[35m', 'cyan':'\033[36m', 'white':'\033[37m',
                 'bright':'\033[1m', 'dim':'\033[2m', 'underscore':'\033[4m',
                 'blink':'\033[5m', 'reverse':'\033[7m', 'hidden':'\033[8m'}
+markup_codes=set(terminal_codes.keys())
 logfile=None
 markup_keywords={}
 printed_rchar=0

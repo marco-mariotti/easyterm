@@ -1,2 +1,3 @@
 from .colorprint import *
-from .easycommands import *
+from .commandutils import *
+from .commandlineopt import *

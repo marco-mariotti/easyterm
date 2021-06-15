@@ -1,6 +1,7 @@
-import sys, shlex, string, copy, re
+import sys, shlex, string, copy, re, os
 from .colorprint import write, printerr
 __all__ = ["command_line_options","NoTracebackError",  "set_up_no_traceback_error"]
+
 # "CommandLineOptions", "CommandLineError" 
 
 class CommandLineOptions(dict):
@@ -90,7 +91,10 @@ def command_line_options(default_opt,
     """
     
     default_opt=CommandLineOptions(default_opt)
-    if not 'print_opt' in default_opt:   default_opt['print_opt']=False   # built-in accepted option
+    for builtin_opt in ['h', 'print_opt']:
+        if not builtin_opt in default_opt:
+            default_opt[builtin_opt]=False
+
     opt=CommandLineOptions()
     arglist=sys.argv[1:]
     synonyms['help']='h'                   # built-in synonym
@@ -236,7 +240,6 @@ def command_line_options(default_opt,
         sys.exit()            
 
     return(opt)
-
 
 def match_any_word(main_string, word_list, is_pattern=True, ignore_case=True):
   """ Given a string and a list of strings/perl_patterns, it returns True is any of them matches the string, False otherwise  """
