@@ -77,6 +77,7 @@ def service(text, **kwargs):
 
     Returns: None
     """
+    if not sys.stdout.isatty(): return
     global printed_rchar
     write("\r"+text, end='', is_service=True, **kwargs)
     printed_rchar=len(text)
