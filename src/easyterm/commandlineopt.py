@@ -1,8 +1,13 @@
-import sys, shlex, string, copy, re, os
-from .colorprint import write, printerr
+import sys, shlex, string, copy, re, os, warnings
+from .colorprint import write 
 __all__ = ["command_line_options","NoTracebackError",  "set_up_no_traceback_error"]
 
 # "CommandLineOptions", "CommandLineError" 
+
+def custom_formatwarning(msg, *args, **kwargs):
+    return str(msg) + '\n'
+warnings.formatwarning = custom_formatwarning
+
 
 class CommandLineOptions(dict):
     """ Subclass of dict designed to store options of the command line.
@@ -138,9 +143,17 @@ def command_line_options(default_opt,
                 raise CommandLineError(f"ERROR you can provide positional arguments before "
                                        f"OR after other options, not both! ")
             positionals='after'
-            from_here=last_ki+2  if not type(default_opt[last_k]) is bool else  last_ki+1
+            if type(default_opt[last_k]) is bool:
+                if  len(arglist)>last_ki+1 and  arglist[last_ki+1] in ('0', '1'):
+                    from_here=last_ki+2
+                else:
+                    from_here=last_ki+1
+            else:
+                from_here=last_ki+2
             up_to=None
 
+    
+            
     ## inserting implied positional option keys explicitly in arglist
     if positionals:
         if not positional_keys: positional_keys=[]  # will result in error below; just saving some code
@@ -148,7 +161,7 @@ def command_line_options(default_opt,
         for i, value in enumerate(arglist[from_here:up_to]):
             if len(positional_keys)<i+1:
                 if tolerate_extra:
-                    printerr((f"WARNING ignoring extra argument: "
+                    warnings.warn((f"command_line_options WARNING ignoring extra argument: "
                               f"{' '.join(arglist[from_here+1:up_to])}"))
                 else:
                     raise CommandLineError((f"ERROR extra argument not accepted: "
@@ -156,23 +169,23 @@ def command_line_options(default_opt,
                 break
             insert_these.append( [from_here+i, positional_keys[i]])
             if type(default_opt[ positional_keys[i] ]) is list: break
-            
+
         for i, key_opt in insert_these[::-1]:
             arglist.insert(i, f"-{key_opt}")
 
         opt_key_indices=[i     for i, bit in enumerate(arglist)   
                                 if bit.startswith('-') and len(bit.split())==1 and 
                                 len(bit)>1 and bit[1] in CommandLineOptions.accepted_option_chars]
-        
+
+
     ##### 
     ## main block: going one option at the time, parsing arglist
     for ni, i in enumerate(opt_key_indices):
-
         ## some internal bits are ignored: e.g.   -n 8 these are all ignored -k 7
-        if (ni>0 and opt_key_indices[ni-1]+1 != i-1 and
+        if (ni>0 and opt_key_indices[ni-1]+1 < i-1 and
             not type(default_opt[opt_key]) is list): # note here opt_key is the previous one
             if tolerate_extra:
-                printerr((f"WARNING ignoring extra argument: "
+                warnings.warn((f"command_line_options WARNING ignoring extra argument: "
                           f"{' '.join(arglist[opt_key_indices[ni-1]+2:i])}"))
             else:
                 raise CommandLineError((f"ERROR extra argument not accepted: "
@@ -190,7 +203,7 @@ def command_line_options(default_opt,
                  match_any_word(opt_key, tolerated_regexp, ignore_case=False))):
                 # not expecting this option but we tolerate it
                 if warning_extra:
-                    printerr(f"WARNING accepting unexpected command line option: -{opt_key}")
+                    warnings.warn(f"command_line_options WARNING accepting unexpected command line option: -{opt_key}")
                 expected_type=None                    
             else:
                 raise CommandLineError(f"ERROR Unexpected command line option: -{opt_key}")
@@ -213,10 +226,18 @@ def command_line_options(default_opt,
             else:
                 if expected_type is None:  # if this option was not in default_opt, we cast it to string (unless it had no argument, in which case to bool)
                     expected_type=str
-                try:
-                    value= expected_type(  arglist[i+1] ) 
-                except ValueError as e:
-                    raise CommandLineError(f"ERROR wrong type for option -{opt_key} : {e}") from None
+                if expected_type is bool:
+                    if   arglist[i+1]=='1':
+                        value=True
+                    elif arglist[i+1]=='0':
+                        value=False
+                    else:
+                        raise CommandLineError(f"ERROR boolean options can only take values 0, 1 or none. Received: -{opt_key} : {arglist[i+1]}") from None
+                else:
+                  try:
+                      value= expected_type(  arglist[i+1] ) 
+                  except ValueError as e:
+                      raise CommandLineError(f"ERROR wrong type for option -{opt_key} : {e}") from None
         else:  # expected_type is list: takes all values after this
             vis=[vi for vi in range(i+1, next_ki   if not next_ki is None else len(arglist))]     # value indices
             value=[arglist[vi] for vi in vis]  # list of strings
