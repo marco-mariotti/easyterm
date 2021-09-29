@@ -117,6 +117,7 @@ def command_line_options(default_opt,
     --------
 
     **Example 1**
+
     If you use this code in your python script:
 
     .. code-block:: python
@@ -146,31 +147,32 @@ def command_line_options(default_opt,
 
         {'i':'file1', 'o':'output', 'param':-1}   # note param is cast to int
 
+
     **Example 2**
 
-    With:
-    .. code-block:: python
+    With::
 
         command_line_options( default_opt={'param':3, 'files':[]},  synonyms={'p':'param'})
 
     This command line:
+
     .. code-block:: bash
 
         script.py -files a b c d e -p 10
 
-    Results in:
-    .. code-block:: python
+    Results in::
  
         {'files':['a', 'b', 'c', 'd', 'e'], 'param':10}  # note -p as synonym
 
 
     **Example 3**
-    With:
-    .. code-block:: python
+
+    With::
 
         command_line_options( default_opt={'i':'', 'o':'', 's':'', 'k':5.5},  positional_keys=['i', 'o'])
 
     This command line:
+
     .. code-block:: bash
 
         script.py -k 4.5 in out     
@@ -179,15 +181,19 @@ def command_line_options(default_opt,
 
         {'i':'in', 'o':'out', 's':'', 'k':4.5}   # positional args
 
-    While this command line::
+    While this command line:
+
+    .. code-block:: bash
 
         script.py in out -k 10      
 
-    Results in:: python
+    Results in::
 
         {'i':'in', 'o':'out', 's':'', 'k':10.0}  # this order also accepted  # note -k cast to float
 
-    And this command line::
+    And this command line:
+
+    .. code-block:: bash
 
         script.py in -s "multi word str"   
 
