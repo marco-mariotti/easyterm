@@ -1,5 +1,5 @@
 __all__=['write', 'printerr', 'service', 'set_logfile', 'set_markup_keywords', 'set_markup_usage', 'flush_service', 'markup_codes']
-import sys
+import sys, io
 
 terminal_codes={'':'\033[0m', 'red':'\033[31m', 'green':'\033[32m',
                 'black':'\033[30m', 'yellow':'\033[33m', 'blue':'\033[34m',
@@ -103,7 +103,7 @@ def set_logfile(fileh_or_path):
     global logfile
     if type(fileh_or_path) is str:
         logfile=open(fileh_or_path, 'w')
-    elif type(fileh_or_path) is file:
+    elif isinstance(fileh_or_path, io.IOBase):
         logfile=fileh_or_path
     else:
         raise Exception(f"set_logfile ERROR expected string or file, got this instead: {type(fileh_or_path)} {fileh_or_path}")
