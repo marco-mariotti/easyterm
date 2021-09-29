@@ -1,4 +1,4 @@
-import sys, shlex, string, copy, re, os, warnings
+import sys, string, copy, re, os, warnings
 from .colorprint import write 
 __all__ = ["command_line_options","NoTracebackError",  "set_up_no_traceback_error"]
 
@@ -11,6 +11,7 @@ warnings.formatwarning = custom_formatwarning
 
 class CommandLineOptions(dict):
     """ Subclass of dict designed to store options of the command line.
+
     Two differences with dict:
      - its representation looks good on screen
      - requesting a key which is absent returns None, instead of throwing an error
@@ -40,10 +41,17 @@ def set_up_no_traceback_error(set_on=True):
     """After this, raising NoTracebackError or its subclasses results in single error line, without traceback.
     Under the hood, replaces sys.excepthook
     
-    Args:
-     set_on (bool): normally True. Call this fn with set_on=False to restore the default sys.excepthook
+    Parameters
+    ----------
 
-    Returns: None
+    set_on : bool
+        normally this is set to True when the module is loaded.
+        Call this fn with set_on=False to restore the default sys.excepthook
+
+    Returns
+    -------
+    None
+        None
     """
     def excepthook_allowing_notraceback(type, value, traceback):
         if issubclass(type, NoTracebackError):              sys.exit(str(value))
@@ -63,33 +71,63 @@ def command_line_options(default_opt,
                          tolerated_regexp=[],
                          warning_extra=True,
                          advanced_help_msg={}):
-    """Fetches command line keys (e.g. -i ) and theirs arguments from the command line, and returns them after filling with default values
+    """Reads command line arguments and returns them after filling with default values
     
-    Args:
-    * default_opt (dict):      default arguments for all keys. Their value types also define the typing enforced on command line arguments
-         possible value types are int, float, str, bool (argument can be omitted), list (multiple args accepted)
-    + help_msg (str):          if -h | -help | --help is provided, this help is displayed and the script exits
-    + positional_keys (iter):  these keys will be associated, in order, to args with no explicit keys (e.g. script.py arg1 arg2)
-    + synonyms (dict):         add synonyms for keys; e.g. {'inputfile':'i',  'p':'param'}; the built-in {'help':'h'} is added
+    Here below, we refer to option names as *keys* (e.g. the "i" in "program.py -i inputfile" ),
+    and *arguments* for their argument (e.g. "inputfile" above).
+    
+    Parameters
+    ----------
+    
+    default_opt : dict
+        defines default arguments for all command lines keys. 
+        Their value types also define the typing enforced on command line arguments.
+        Possible value types are int, float, str, bool (whose argument can be omitted), list (multiple args accepted)
 
-    + tolerate_extra (bool):    normally any keys not found in default_opt raises an error; this allows to tolerate & accept unexpected keys
-    + tolerated_regexp (list):  define which unexpected keys to tolerate using regexp employed by module re
-    + warning_extra (bool):     when keys are tolerated (two previous fn args), normally a warning is printed; set to False to silence these
-    + advanced_help_msg (dict): dictionary defining specialized help messages displayed only when invoked as argument to -h
+    help_msg : str
+        if any of -h | -help | --help are  provided, this help message is displayed and the script exits
 
-    Returns: 
-     opt (CommandLineOpt):      dictionary like structure with structure key:arg
+    positional_keys : iterable
+        these keys will be associated, in order, to argumentss with no explicit keys (e.g. script.py arg1 arg2)
 
-  Examples:     
+    synonyms : dict
+        add synonyms for keys; e.g. if you use {'input':'i', 'p':'param'} then using -input or -i in the command line will be equivalent
+        note: the built-in {'help':'h'} is automatically added
 
-   command_line_options( default_opt={'i': 'input', 'o':'output', 'param':3} )
+    tolerate_extra : bool
+        normally any key not found in default_opt raises an error; this allows to tolerate & accept unexpected keys
+
+    tolerated_regexp : list
+        define which unexpected keys to tolerate using regexp syntax, employed by module re
+
+    warning_extra : bool
+        when keys are tolerated (see two previous args), normally a warning is printed; set this to False to silence them
+    
+    advanced_help_msg : dict
+        dictionary defining specialized help messages, which are displayed only when invoked as argument to -h
+        e.g. if you run on the command line ' -h map ', and if within the script you had 
+        advanced_help_msg={'map':'map message'}, then 'map message' is displayed
+
+    Returns
+    -------
+    opt : CommandLineOpt
+        dictionary like object with structure key:arg, carrying command line options and, if not provided, default values
+
+    Examples
+    --------
+    .. code-block:: python
+    command_line_options( default_opt={'i': 'input', 'o':'output', 'param':3} ) 
+
+    .. code-block:: bash
     script.py -i file1  -o file2   # --> {'i':'file1', 'o':'file2', 'param':3}
     script.py -i file1  -param -1  # --> {'i':'file1', 'o':'output', 'param':-1}   # note param is cast to int
 
-   command_line_options( default_opt={'param':3, 'files':[]},  synonyms={'p':'param'})
+    Note
+    ----
+    command_line_options( default_opt={'param':3, 'files':[]},  synonyms={'p':'param'})
     script.py -files a b c d e -p 10   # --> {'files':['a', 'b', 'c', 'd', 'e'], 'param':10}  # note -p as synonym
 
-   command_line_options( default_opt={'i':'', 'o':'', 's':'', 'k':5.5},  positional_keys=['i', 'o'])
+    command_line_options( default_opt={'i':'', 'o':'', 's':'', 'k':5.5},  positional_keys=['i', 'o'])
     script.py -k 4.5 in out     # --> {'i':'in', 'o':'out', 's':'', 'k':4.5}   # positional args
     script.py in out -k 10      # --> {'i':'in', 'o':'out', 's':'', 'k':10.0}  # this order also accepted  # note -k cast to float
     script.py in -s "multi word str"   # --> {'i':'', 'o':'', 's':'multi char str', 'k':5.5}  # multiword string as arg

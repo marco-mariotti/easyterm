@@ -23,16 +23,33 @@ def flush_service():
         printed_rchar=0    
     
 def write(text, end='\n', how='', keywords={}, is_service=False, is_stderror=False):
-    """Main function for printing a message to stdout. Note: prints to logfile too, if defined (see set_logfile)
+    """Prints a message to stdout, optionally using colors
+    
+    Wraps the builtin print() with convenient options.
+    If a log file is defined, it prints to the logfile too (see set_logfile).
 
-    Args:
-     text (any):       text to be printed, converted to str if necessary
-     end (str):        newline is added to each input text, use end='' to avoid it
-     how (str):        any number of comma-separated termcodes to markup your text, among:
-      black blink blue bright cyan dim green hidden magenta red reverse underscore white yellow
-     keywords (str):   dictionary like key:termcode, so that all occurrences of key in text is marked with termcode(s)
+    Parameters
+    ----------
+    text : str | any
+        text to be printed. If not str, it is converted to str
 
-    Returns: None
+    end : str
+        by default, a newline is added to each input text. 
+        Provide end='' to avoid it, or another character to use a different end of line character
+
+    how : str        
+        any number of comma-separated termcodes to markup your text, among:
+        black blink blue bright cyan dim green hidden magenta red reverse underscore white yellow
+
+    keywords : dict
+        use this to automatically highlight all occurrences of certain words.
+        dictionary structured like word:termcode, so that all occurrences of word in text is marked with termcode(s)
+        Note: using many keywords makes the function slower
+
+    Returns
+    -------
+    None
+        None
     """  
     if not keywords and markup_keywords:
         keywords=markup_keywords
@@ -69,13 +86,19 @@ def write(text, end='\n', how='', keywords={}, is_service=False, is_stderror=Fal
 
         
 def service(text, **kwargs):
-    """ Print a message to screen (stderr) meant to be flushed out and re-printed again modified, e.g. in a progress bar style.
+    """ Print a temporary message to screen (stderr) meant to be flushed out and re-printed again modified, e.g. in a progress bar style.
     
-    Args:
-     text (str):  message to be printed
-     how (str):   termcodes for markup. See write() 
+    Parameters
+    ----------
+    text : str
+        message to be printed
+    how : str
+        termcodes for markup. See write() 
 
-    Returns: None
+    Returns
+    -------
+    None
+        None
     """
     if not sys.stdout.isatty(): return
     global printed_rchar
@@ -84,21 +107,49 @@ def service(text, **kwargs):
 
     
 def printerr(text, *args, **kwargs):
-    """ Prints message to stderr, optionally using markup (e.g. colored text). Note: it also prints to logfile if defined (see set_logfile).
+    """Prints a message to stderr, optionally using colors
+    
+    Wraps the builtin print() with convenient options.
+    If a log file is defined, it prints to the logfile too (see set_logfile).
 
-    Args:    see write function
-    Returns: None
-    """ 
+    Parameters
+    ----------
+    text : str | any
+        text to be printed. If not str, it is converted to str
+
+    end : str
+        by default, a newline is added to each input text. 
+        Provide end='' to avoid it, or another character to use a different end of line character
+
+    how : str        
+        any number of comma-separated termcodes to markup your text, among:
+        black blink blue bright cyan dim green hidden magenta red reverse underscore white yellow
+
+    keywords : dict
+        use this to automatically highlight all occurrences of certain words.
+        dictionary structured like word:termcode, so that all occurrences of word in text is marked with termcode(s)
+        Note: using many keywords makes the function slower
+
+    Returns
+    -------
+    None
+        None
+    """
     write(text, *args, **kwargs, is_stderror=True)
 
     
 def set_logfile(fileh_or_path):
-    """ After setting this, all messages printed with write() or printerr() are also sent to logfile.
-    
-    Args:
-     fileh_or_path (file|str): file path specification or buffer to print a copy of all messages to
+    """Sets a logfile where all messages printed with printed with write() or printerr() are also sent.
 
-    Returns: None
+    Parameters
+    ----------
+    fileh_or_path : file | str
+        file path specification or buffer of desired logfile
+
+    Returns
+    -------
+    None
+        None
     """
     global logfile
     if type(fileh_or_path) is str:
@@ -109,13 +160,23 @@ def set_logfile(fileh_or_path):
         raise Exception(f"set_logfile ERROR expected string or file, got this instead: {type(fileh_or_path)} {fileh_or_path}")
     
 def set_markup_keywords(kwords):
-    """ Set a syntax to always print certain words using a specific markup
+    """Set a syntax to always print certain words using a specific markup (when using write or printerr)
     
-    Args:
-     kwords (dict) key:termcode, where key is any string, and termcode any comma-separated combination of these:
-      black blink blue bright cyan dim green hidden magenta red reverse underscore white yellow
+    Parameters
+    ----------
+    kwords : dict
+        dictionary like key:termcode, where key is any string, and termcode any comma-separated combination of these:
+        black blink blue bright cyan dim green hidden magenta red reverse underscore white yellow
+    
+    Note
+    ----
+        Using many keywords makes printing slower, so beware
 
-    Returns: None
+    
+    Returns
+    -------
+    None
+        None
     """
     
     global markup_keywords
@@ -125,10 +186,15 @@ def set_markup_keywords(kwords):
 def set_markup_usage(setting):
     """ Turns off or on the usage of colors and other terminal markup
     
-    Args:
-     setting (bool): new setting, use False to turn off markup, True to turn back on
+    Parameters
+    ----------
+    setting : bool
+          new setting, use False to turn off markup, True to turn back on
 
-    Returns: None
+    Returns
+    -------
+    None
+        None
     """
     global no_colors
     no_colors= not setting
