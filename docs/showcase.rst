@@ -1,8 +1,14 @@
 .. raw:: html
 	 
-    <style> .red {color:red} </style>
-    <style> .blue {color:blue} </style>    
-    
+    <style> .red {color:red; font-family: monospace}   </style>
+    <style> .blue {color:blue; font-family: monospace} </style>    
+
+.. role:: red
+
+.. role:: blue	  
+
+	  
+		   
 	     
 Showcase of easyterm
 ====================
@@ -28,7 +34,7 @@ Printing with colors and other markup
 The module :doc:`colorprint` offers functions to easily print elegant messages
 to screen (using ANSI terminal colors).
 
-Function :func:`~easyterm/colorprint/write` works like the python built-in ``print``, but
+Function :func:`~easyterm.colorprint.write` works like the python built-in ``print``, but
 additionally offers argument ``how``, which accept a markup code which defines the color
 used to printing to screen the message.
 
