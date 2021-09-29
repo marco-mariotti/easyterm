@@ -131,13 +131,8 @@ def command_line_options(default_opt,
 
     >>> command_line_options( default_opt={'param':3, 'files':[]},  synonyms={'p':'param'})
 
-    Will result in:
-
-    .. code:: 
-
-    script.py -files a b c d e -p 10   
-
-    >>> {'files':['a', 'b', 'c', 'd', 'e'], 'param':10}  # note -p as synonym
+    So the command line ``script.py -files a b c d e -p 10 `` results in 
+    ``{'files':['a', 'b', 'c', 'd', 'e'], 'param':10}  # note -p as synonym ``
 
     Yet another example::
 
