@@ -133,7 +133,7 @@ def command_line_options(default_opt,
 
     Will result in:
 
-    .. code:: bash
+    .. code:: 
 
     script.py -files a b c d e -p 10   
 
