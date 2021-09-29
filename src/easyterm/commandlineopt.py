@@ -117,7 +117,7 @@ def command_line_options(default_opt,
     --------
     Using this within python::
 
-    command_line_options( default_opt={'i': 'input', 'o':'output', 'param':3} ) 
+    >>> command_line_options( default_opt={'i': 'input', 'o':'output', 'param':3} ) 
 
     These command lines will result in the following object returned::
 
@@ -129,16 +129,19 @@ def command_line_options(default_opt,
 
     Another example::
 
-    command_line_options( default_opt={'param':3, 'files':[]},  synonyms={'p':'param'})
+    >>> command_line_options( default_opt={'param':3, 'files':[]},  synonyms={'p':'param'})
 
     Will result in::
 
+    .. code:: bash
+
     script.py -files a b c d e -p 10   
-    # --> {'files':['a', 'b', 'c', 'd', 'e'], 'param':10}  # note -p as synonym
+
+    >>> {'files':['a', 'b', 'c', 'd', 'e'], 'param':10}  # note -p as synonym
 
     Yet another example::
 
-    command_line_options( default_opt={'i':'', 'o':'', 's':'', 'k':5.5},  positional_keys=['i', 'o'])
+    >>> command_line_options( default_opt={'i':'', 'o':'', 's':'', 'k':5.5},  positional_keys=['i', 'o'])
 
     script.py -k 4.5 in out     
     # --> {'i':'in', 'o':'out', 's':'', 'k':4.5}   # positional args

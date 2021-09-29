@@ -8,5 +8,8 @@ Module colorprint:
 Module commandlineopt:
 - read/manage command line options with minimal coding  
 
+Module commandutils:
+- create temporary folders with random name
+- check file presence or checksum
 
 
