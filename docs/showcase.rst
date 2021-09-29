@@ -1,6 +1,7 @@
 .. raw:: html
 	 
-    <style> .red {color:red; font-family: monospace}   </style>
+    <style> .norm {font-family: monospace}   </style>
+    <style> .red {color:red; font-family: monospace}   </style>    
     <style> .blue {color:blue; font-family: monospace} </style>    
 
 .. role:: red
@@ -41,13 +42,24 @@ used to printing to screen the message.
 ::
  
     >>> write('This is a message with no markup')
-    This is a message with no markup
+
+:norm:`This is a message with no markup`
 
     >>> write('This message is colored!', how='red')
 
 :red:`This message is colored!`
 
      
+There are many markups available, as shown here::
+   
+     >>> for i in 'black blue bright cyan dim green magenta red reverse underscore white yellow reverse,blue,bright red,underscore'.split():
+     ...  write('This message is marked with '+i, how=i)
+     
+ .. image:: ./_static/colorprint_showcase.png
+
+Note that some markups can be combined with others (using commas), as shown in the last two examples above.
+
+
 *Note: examples above are colored using html; for most accurate results, run the code in a python terminal*
 
 
