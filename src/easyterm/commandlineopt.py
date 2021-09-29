@@ -131,7 +131,7 @@ def command_line_options(default_opt,
 
     >>> command_line_options( default_opt={'param':3, 'files':[]},  synonyms={'p':'param'})
 
-    Will result in::
+    Will result in:
 
     .. code:: bash
 
