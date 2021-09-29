@@ -9,7 +9,7 @@ Welcome to easyterm's documentation!
 The module easyterm provides functions to enhance the interaction between
 python and bash terminal. 
 
-- First time? After :doc:`installation`, check the :doc:`tutorial`
+- First time? After :doc:`installation`, check the :doc:`showcase`
 - Check module :doc:`colorprint` for printing messages in colors or other markup
 - Check module :doc:`commandlineopt` for reading command line options in a straightforward way
 - Check module :doc:`commandutils` for utilities such as creating random temporary folders, running bash commands, and more.
@@ -19,7 +19,7 @@ python and bash terminal.
    :caption: Contents:
 
    installation
-   tutorial
+   showcase
    colorprint
    commandlineopt
 	     

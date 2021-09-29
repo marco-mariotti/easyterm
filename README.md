@@ -12,4 +12,5 @@ Module commandutils:
 - create temporary folders with random name
 - check file presence or checksum
 
+See https://easyterm.readthedocs.io/
 

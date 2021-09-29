@@ -175,31 +175,31 @@ def command_line_options(default_opt,
 
     .. code-block:: bash
 
-        script.py -k 4.5 in out     
+        script.py -k 4.5 in1 out1    
     
     Results in::
 
-        {'i':'in', 'o':'out', 's':'', 'k':4.5}   # positional args
+        {'i':'in1', 'o':'out1', 's':'', 'k':4.5}   # positional args
 
     While this command line:
 
     .. code-block:: bash
 
-        script.py in out -k 10      
+        script.py in1 out1 -k 10      
 
     Results in::
 
-        {'i':'in', 'o':'out', 's':'', 'k':10.0}  # this order also accepted  # note -k cast to float
+        {'i':'in1', 'o':'out1', 's':'', 'k':10.0}  # this order also accepted  # note -k cast to float
 
     And this command line:
 
     .. code-block:: bash
 
-        script.py in -s "multi word str"   
+        script.py in1 -s "multi word str"   
 
     Results in::
 
-        {'i':'', 'o':'', 's':'multi char str', 'k':5.5}  # multiword string as arg
+        {'i':'in1', 'o':'', 's':'multi char str', 'k':5.5}  # multiword string as arg
     """
     
     default_opt=CommandLineOptions(default_opt)

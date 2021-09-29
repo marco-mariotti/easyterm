@@ -1,4 +1,5 @@
 Module commandutils
 ===================
 
-Hello worlds
+.. automodule:: easyterm.commandutils
+		   :members:
