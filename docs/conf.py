@@ -31,6 +31,8 @@ release = [x.split('=')[1].strip() for x in open('../setup.cfg') if x.startswith
 # ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon']
 master_doc = "index"
+add_module_names = False
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
