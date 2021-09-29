@@ -5,7 +5,7 @@
     <style> .blue {color:blue; font-family: monospace} </style>    
 
 .. role:: red
-
+.. role:: norm
 .. role:: blue	  
 
 	  
@@ -56,18 +56,11 @@ There are many markups available, as shown here::
      ...  write('This message is marked with '+i, how=i)
 
      
-.. image:: docs/_static/colorprint_showcase.png
-
+.. image:: images/colorprint_showcase.png
+	   :width: 700  
 	   
-
 Note that some markups can be combined with others (using commas), as shown in the last two examples above.
 
-.. image:: _static/colorprint_showcase.png
-
-
-Test
-
-.. image:: ./_static/colorprint_showcase.png
 
 *Note: examples above are colored using html; for most accurate results, run the code in a python terminal*
 
