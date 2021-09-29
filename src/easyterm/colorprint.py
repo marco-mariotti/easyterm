@@ -13,9 +13,17 @@ printed_rchar=0
 no_colors=False
     
 def flush_service():
-    """ Clears up the "sticky" messages printed with the service function, making use of \\r
-    Args:    (None)
-    Returns:  None
+    """ Clears up the "sticky" messages printed with the service function
+
+    Returns
+    =======
+    None
+        None
+    
+    See Also
+    ========
+    service : print temporary messages to screen
+
     """
     global printed_rchar
     if printed_rchar:
