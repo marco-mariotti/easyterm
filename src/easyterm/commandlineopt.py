@@ -115,44 +115,85 @@ def command_line_options(default_opt,
 
     Examples
     --------
-    Using this within python::
 
-    >>> command_line_options( default_opt={'i': 'input', 'o':'output', 'param':3} ) 
+    **Example 1**
+    If you use this code in your python script:
 
-    These command lines will result in the following object returned::
+    .. code-block:: python
 
-    script.py -i file1  -o file2   
-    # --> {'i':'file1', 'o':'file2', 'param':3}
+        command_line_options( default_opt={'i': 'input', 'o':'output', 'param':3} ) 
 
-    script.py -i file1  -param -1  
-    # --> {'i':'file1', 'o':'output', 'param':-1}   # note param is cast to int
+    Then, when your script is run with this command line (in bash or analogous):
 
-    Another example::
+    .. code-block:: bash
 
-    >>> command_line_options( default_opt={'param':3, 'files':[]},  synonyms={'p':'param'})
+        script.py -i file1  -o file2   
 
+    
+    ... this will result in this dictionary returned by ``command_line_options``:
+
+    .. code-block:: python
+
+        {'i':'file1', 'o':'file2', 'param':3}
+
+    Different command line and resulting dictionary returned:
+    
+    .. code-block:: bash
+
+        script.py -i file1  -param -1  
+    
+    .. code-block:: python
+
+        {'i':'file1', 'o':'output', 'param':-1}   # note param is cast to int
+
+    **Example 2**
+
+    With:
+    .. code-block:: python
+
+        command_line_options( default_opt={'param':3, 'files':[]},  synonyms={'p':'param'})
+
+    This command line:
     .. code-block:: bash
 
         script.py -files a b c d e -p 10
 
-    Results in returned dictionary::
-
+    Results in:
     .. code-block:: python
  
         {'files':['a', 'b', 'c', 'd', 'e'], 'param':10}  # note -p as synonym
 
-    Yet another example::
 
-    >>> command_line_options( default_opt={'i':'', 'o':'', 's':'', 'k':5.5},  positional_keys=['i', 'o'])
+    **Example 3**
+    With:
+    .. code-block:: python
 
-    script.py -k 4.5 in out     
-    # --> {'i':'in', 'o':'out', 's':'', 'k':4.5}   # positional args
+        command_line_options( default_opt={'i':'', 'o':'', 's':'', 'k':5.5},  positional_keys=['i', 'o'])
 
-    script.py in out -k 10      
-    # --> {'i':'in', 'o':'out', 's':'', 'k':10.0}  # this order also accepted  # note -k cast to float
+    This command line:
+    .. code-block:: bash
 
-    script.py in -s "multi word str"   
-    # --> {'i':'', 'o':'', 's':'multi char str', 'k':5.5}  # multiword string as arg
+        script.py -k 4.5 in out     
+    
+    Results in::
+
+        {'i':'in', 'o':'out', 's':'', 'k':4.5}   # positional args
+
+    While this command line::
+
+        script.py in out -k 10      
+
+    Results in:: python
+
+        {'i':'in', 'o':'out', 's':'', 'k':10.0}  # this order also accepted  # note -k cast to float
+
+    And this command line::
+
+        script.py in -s "multi word str"   
+
+    Results in::
+
+        {'i':'', 'o':'', 's':'multi char str', 'k':5.5}  # multiword string as arg
     """
     
     default_opt=CommandLineOptions(default_opt)
