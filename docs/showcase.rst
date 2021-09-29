@@ -54,11 +54,20 @@ There are many markups available, as shown here::
    
      >>> for i in 'black blue bright cyan dim green magenta red reverse underscore white yellow reverse,blue,bright red,underscore'.split():
      ...  write('This message is marked with '+i, how=i)
+
      
- .. image:: ./_static/colorprint_showcase.png
+.. image:: docs/_static/colorprint_showcase.png
+
+	   
 
 Note that some markups can be combined with others (using commas), as shown in the last two examples above.
 
+.. image:: _static/colorprint_showcase.png
+
+
+Test
+
+.. image:: ./_static/colorprint_showcase.png
 
 *Note: examples above are colored using html; for most accurate results, run the code in a python terminal*
 
