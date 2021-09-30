@@ -81,9 +81,8 @@ of :func:`~easyterm.colorprint.write` (and also :func:`~easyterm.colorprint.prin
 .. image:: images/colorprint_showcase.4.png
    :width: 350
 
-Warning
--------
-Setting lots of markup keywords will slow down printing.
+.. warning::
+   Setting lots of markup keywords will slow down printing.
 	   
 Print errors, warnings and progress bars
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -126,26 +125,25 @@ With service, it is straightforward to visualize a progress bar::
    :width: 500
     
 
-Warning
--------
-If you use service in your script, you should avoid using built-in ``print``,
-and stick to :doc:`colorprint` functions :func:`~easyterm.colorprint.write`
-and :func:`~easyterm.colorprint.printerr` for printing messages to screen.
-If you really need to use ``print``, then make sure
-to run :func:`~easyterm.colorprint.flush_service` after running :func:`~easyterm.colorprint.service`
-to make sure subsequent messages are visualized correctly
+.. warning::
+    If you use service in your script, you should avoid using built-in ``print``,
+    and stick to :doc:`colorprint` functions :func:`~easyterm.colorprint.write`
+    and :func:`~easyterm.colorprint.printerr` for printing messages to screen.
+    If you really need to use ``print``, then make sure
+    to run :func:`~easyterm.colorprint.flush_service` after running :func:`~easyterm.colorprint.service`
+    to make sure subsequent messages are visualized correctly
 
 
 Reading options from the command line
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Python offers various tools to read options provided as you run your script through the command line
-(e.g. `argparse<https://docs.python.org/3/library/argparse.html>`,
-`getopt<https://docs.python.org/3/library/getopt.html>`). Although powerful, these methods are not
+(e.g. `argparse<https://docs.python.org/3/library/argparse.html>`_,
+`getopt<https://docs.python.org/3/library/getopt.html>`_). Although powerful, these methods are not
 concise and often require lots of code to work as intended, for example to produce a well formatted help page.
 
 The easyterm :doc:`commandlineopt` provides a function to make managing command line options as straightforward as it gets:
-:func:`~easyterm.colorprint.command_line_options`. 
+:func:`~easyterm.commandlineopt.command_line_options`. 
 
       
 To adopt it in your script, you need to prepare just two objects:
@@ -153,7 +151,7 @@ To adopt it in your script, you need to prepare just two objects:
 1) *default_opt*: a dictionary defining which options your program accepts, and what are their default arguments. 
 2) *help_msg*: the text displayed when your program is run with any of ``-h`` or ``-help`` or ``--help``.
 
-:func:`~easyterm.colorprint.command_line_options` returns a dictionary-like object which has
+:func:`~easyterm.commandlineopt.command_line_options` returns a dictionary-like object which has
 option names as keys and, as their associated values, the arguments to use in the current program execution
 (i.e., those provided by the user, or in their absence, default values).
 
@@ -199,12 +197,12 @@ In green, the script has printed the content of ``opt``.
 We see the value of the ``-i`` option we provided on the command line,
 while default values where used for ``-o`` (empty string) and ``-n`` (3).
 
-Two special options are always added by :func:`~easyterm.colorprint.command_line_options`:
+Two special options are always added by :func:`~easyterm.commandlineopt.command_line_options`:
 ``-h``, which shows the help message when activated, and ``-print_opt``,
 which prints active options when activated (pretty much like our script did).
-These options are always available (and reserved) in scripts that adopt :func:`~easyterm.colorprint.command_line_options`.
+These options are always available (and reserved) in scripts that adopt :func:`~easyterm.commandlineopt.command_line_options`.
 
-If we run our script providing an output file::
+If we run our script providing an output file:
   
 .. code-block:: bash
 		
@@ -224,11 +222,11 @@ and the script would quit with no action afterwards:
    python repeat_file.py -h
 
 .. image:: images/commandlineopt_showcase.3.png
-   :width: 350
+   :width: 450
 
 
-:func:`~easyterm.colorprint.command_line_options` has many more features (have a look at
-:func:`its documentation<~easyterm.colorprint.command_line_options>`), including:
+:func:`~easyterm.commandlineopt.command_line_options` has many more features (have a look at
+:func:`its documentation<~easyterm.commandlineopt.command_line_options>`), including:
    - positional arguments: without an explicit option name
    - option synonyms: i.e. you may have the user specify ``-input`` or ``-i`` with the same result
    - structured help pages: option ``-h`` may accept an argument to show specific instructions otherwise not displayed
