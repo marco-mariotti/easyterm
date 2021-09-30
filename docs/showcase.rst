@@ -140,7 +140,7 @@ Reading options from the command line
 Python offers various tools to read options provided as you run your script through the command line
 (e.g. `argparse <https://docs.python.org/3/library/argparse.html>`_,
 `getopt <https://docs.python.org/3/library/getopt.html>`_). Although powerful, these methods are not
-concise and often require lots of code to work as intended, for example to produce a well formatted help page.
+concise and often require lots of code for rather basic functionalities, for example to produce a well formatted help page.
 
 The easyterm :doc:`commandlineopt` provides a function to make managing command line options as straightforward as it gets:
 :func:`~easyterm.commandlineopt.command_line_options`. 
@@ -250,11 +250,11 @@ There are five accepted argument types:
   are ``1``, ``T``, ``True`` (all resulting in a ``True`` value),
   or ``0``, ``F``, ``False`` (resulting in a ``False`` value).
 - list of strings (``list``): these options may accept multiple arguments, which are stored as a python list.
-  For example, a list-type ``-files`` option may be used in command line like this: `` -files a.txt b.txt c.txt ``.
+  For example, a list-type ``-files`` option may be used in command line like this: ``-files a.txt b.txt c.txt``.
 	   
 
-:func:`~easyterm.commandlineopt.command_line_options` has many more features explained in its documentation,
- including:
+The function :func:`~easyterm.commandlineopt.command_line_options` has many more features
+explained in its documentation, including:
    - **positional arguments**: without an explicit option name
    - **option synonyms**: i.e. you may have the user specify ``-input`` or ``-i`` with the same result
    - **advanced help pages**: option ``-h`` may accept an argument to show specific instructions otherwise not displayed
