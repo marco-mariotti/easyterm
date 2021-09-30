@@ -338,6 +338,13 @@ def command_line_options(default_opt,
                         value=True
                     elif arglist[i+1]=='0':
                         value=False
+                    elif opt_key=='h':
+                        if not advanced_help_msg:
+                            raise CommandLineError(f"ERROR option -h does not accept arguments. Received: {arglist[i+1]}") from None
+                        elif not arglist[i+1] in advanced_help_msg:
+                            raise CommandLineError(f"ERROR argument {arglist[i+1]} is not accepted by option -h. Possible values: {' '.join(advanced_help_msg.keys())}") from None
+                        else:
+                            value=arglist[i+1] ## accepting non-bool value for -h
                     else:
                         raise CommandLineError(f"ERROR boolean options can only take values 0, 1 or none. Received: -{opt_key} : {arglist[i+1]}") from None
                 else:
@@ -359,7 +366,7 @@ def command_line_options(default_opt,
     if opt['h']:
         write(help_msg)        
         if advanced_help_msg and opt['h'] in advanced_help_msg:            
-            write(advanced[opt['h']])
+            write(advanced_help_msg[opt['h']])
             
     if opt['print_opt']:
         write(opt)

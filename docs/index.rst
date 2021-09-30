@@ -22,7 +22,7 @@ python and bash terminal.
    showcase
    colorprint
    commandlineopt
-	     
+   commandutils
 
 Indices and tables
 ==================

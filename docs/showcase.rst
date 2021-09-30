@@ -47,7 +47,7 @@ Note that some markups can be combined with others using commas, as shown in the
 
 Like built-in ``print``, :func:`~easyterm.colorprint.write` accepts a ``end`` argument, defining what
 is appended at the end of each printed message.
-By default it is ``'\\n'``, meaning that a newline is appended.
+By default it is ``'\n'``, meaning that a newline is appended.
 Use ``end=''`` to avoid it, so that the new message will stay on the same line.
 
 We can use this to print messages alternating different markups::
@@ -70,17 +70,21 @@ The ``keywords`` argument serves this purpose::
    :width: 350
 
    
-You may instead use :func:`~easyterm.colorprint.write` to set keywords globally, so that they're matched in every subsequent call
+You may instead use :func:`~easyterm.colorprint.set_markup_keywords` to set keywords globally, so that they're matched in every subsequent call
 of :func:`~easyterm.colorprint.write` (and also :func:`~easyterm.colorprint.printerr`)::
 
   >>> set_markup_keywords({'OK':'green', 'NO':'red', '#':'yellow'})
-  ... for i in range(10):
+  ... for i in range(6):
   ...     write( f'#{i} divisible by 2? { "OK" if not i%2 else "NO"    }' \
   ...               f'| divisible by 3? {"OK" if not i%3 else "NO"}' )
 
 .. image:: images/colorprint_showcase.4.png
    :width: 350
-		   
+
+Warning
+-------
+Setting lots of markup keywords will slow down printing.
+	   
 Print errors, warnings and progress bars
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -122,8 +126,8 @@ With service, it is straightforward to visualize a progress bar::
    :width: 500
     
 
-Note
-----
+Warning
+-------
 If you use service in your script, you should avoid using built-in ``print``,
 and stick to :doc:`colorprint` functions :func:`~easyterm.colorprint.write`
 and :func:`~easyterm.colorprint.printerr` for printing messages to screen.
@@ -131,3 +135,101 @@ If you really need to use ``print``, then make sure
 to run :func:`~easyterm.colorprint.flush_service` after running :func:`~easyterm.colorprint.service`
 to make sure subsequent messages are visualized correctly
 
+
+Reading options from the command line
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Python offers various tools to read options provided as you run your script through the command line
+(e.g. `argparse<https://docs.python.org/3/library/argparse.html>`,
+`getopt<https://docs.python.org/3/library/getopt.html>`). Although powerful, these methods are not
+concise and often require lots of code to work as intended, for example to produce a well formatted help page.
+
+The easyterm :doc:`commandlineopt` provides a function to make managing command line options as straightforward as it gets:
+:func:`~easyterm.colorprint.command_line_options`. 
+
+      
+To adopt it in your script, you need to prepare just two objects:
+
+1) *default_opt*: a dictionary defining which options your program accepts, and what are their default arguments. 
+2) *help_msg*: the text displayed when your program is run with any of ``-h`` or ``-help`` or ``--help``.
+
+:func:`~easyterm.colorprint.command_line_options` returns a dictionary-like object which has
+option names as keys and, as their associated values, the arguments to use in the current program execution
+(i.e., those provided by the user, or in their absence, default values).
+
+Let's see an example of a python script adopting this model, ``repeat_file.py``::
+
+  >>> from easyterm import command_line_options, printerr, write
+  ... def_opt={'i':'inputfile',
+  ...          'o':'',
+  ...          'n':3}
+  ... help_msg="""This program prints the content of an inputfile, repeated N times.
+                  Options:
+		   -i  inputfile
+		   -o  outputfile [optional]
+		   -n  number of repetitions"""
+  ... 		   
+  ... opt=command_line_options(def_opt, help_msg)
+  ... printerr(opt, how='green')          ## showing what is returned by command_line_options
+  ... if opt['o']:    fh=open(opt['o'], 'w')
+  ... for repetition in range(opt['n']):
+  ...     for line in open(opt['i']):
+  ...         if opt['o']:    fh.write(line)
+  ...         else:           write(line, end='')
+  ...
+
+Let's consider a text file called ``oneline.txt``, whose only content is:
+
+.. code-block:: 
+		
+  well, there is a single line of text here
+
+Now, let's run our ``repeat_file.py`` script with this as input:
+
+.. code-block:: bash
+
+   python repeat_file.py -i oneline.txt
+
+This is the result:
+   
+.. image:: images/commandlineopt_showcase.1.png
+   :width: 350
+
+In green, the script has printed the content of ``opt``.
+We see the value of the ``-i`` option we provided on the command line,
+while default values where used for ``-o`` (empty string) and ``-n`` (3).
+
+Two special options are always added by :func:`~easyterm.colorprint.command_line_options`:
+``-h``, which shows the help message when activated, and ``-print_opt``,
+which prints active options when activated (pretty much like our script did).
+These options are always available (and reserved) in scripts that adopt :func:`~easyterm.colorprint.command_line_options`.
+
+If we run our script providing an output file::
+  
+.. code-block:: bash
+		
+   python repeat_file.py -i oneline.txt  -o output.txt
+
+We see that the ``-o`` option recorded in ``opt`` was updated accordingly:
+
+.. image:: images/commandlineopt_showcase.2.png
+   :width: 350
+
+
+If we ran ``repeat_file.py`` with option ``-help``, we would see the help page,
+and the script would quit with no action afterwards:
+
+.. code-block:: bash
+ 
+   python repeat_file.py -h
+
+.. image:: images/commandlineopt_showcase.3.png
+   :width: 350
+
+
+:func:`~easyterm.colorprint.command_line_options` has many more features (have a look at
+:func:`its documentation<~easyterm.colorprint.command_line_options>`), including:
+   - positional arguments: without an explicit option name
+   - option synonyms: i.e. you may have the user specify ``-input`` or ``-i`` with the same result
+   - structured help pages: option ``-h`` may accept an argument to show specific instructions otherwise not displayed
+      
