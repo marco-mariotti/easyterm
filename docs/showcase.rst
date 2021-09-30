@@ -126,7 +126,7 @@ With service, it is straightforward to visualize a progress bar::
     
 
 .. warning::
-    If you use service in your script, you should avoid using built-in ``print``,
+    If you use :func:`~easyterm.colorprint.service` in your script, you should avoid using built-in ``print``,
     and stick to :doc:`colorprint` functions :func:`~easyterm.colorprint.write`
     and :func:`~easyterm.colorprint.printerr` for printing messages to screen.
     If you really need to use ``print``, then make sure
@@ -138,8 +138,8 @@ Reading options from the command line
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Python offers various tools to read options provided as you run your script through the command line
-(e.g. `argparse<https://docs.python.org/3/library/argparse.html>`_,
-`getopt<https://docs.python.org/3/library/getopt.html>`_). Although powerful, these methods are not
+(e.g. `argparse <https://docs.python.org/3/library/argparse.html>`_,
+`getopt <https://docs.python.org/3/library/getopt.html>`_). Although powerful, these methods are not
 concise and often require lots of code to work as intended, for example to produce a well formatted help page.
 
 The easyterm :doc:`commandlineopt` provides a function to make managing command line options as straightforward as it gets:
@@ -155,26 +155,28 @@ To adopt it in your script, you need to prepare just two objects:
 option names as keys and, as their associated values, the arguments to use in the current program execution
 (i.e., those provided by the user, or in their absence, default values).
 
-Let's see an example of a python script adopting this model, ``repeat_file.py``::
+Let's see an example of a python script adopting this model, ``repeat_file.py``:
 
-  >>> from easyterm import command_line_options, printerr, write
-  ... def_opt={'i':'inputfile',
-  ...          'o':'',
-  ...          'n':3}
-  ... help_msg="""This program prints the content of an inputfile, repeated N times.
-                  Options:
-		   -i  inputfile
-		   -o  outputfile [optional]
-		   -n  number of repetitions"""
-  ... 		   
-  ... opt=command_line_options(def_opt, help_msg)
-  ... printerr(opt, how='green')          ## showing what is returned by command_line_options
-  ... if opt['o']:    fh=open(opt['o'], 'w')
-  ... for repetition in range(opt['n']):
-  ...     for line in open(opt['i']):
-  ...         if opt['o']:    fh.write(line)
-  ...         else:           write(line, end='')
-  ...
+.. code-block:: python
+  
+   from easyterm import command_line_options, printerr, write
+   def_opt={'i':'inputfile',
+            'o':'',
+            'n':3}
+   help_msg="""This program prints the content of an inputfile, repeated N times.
+               Options:
+  		   -i  inputfile
+  		   -o  outputfile [optional]
+  		   -n  number of repetitions"""
+   		   
+   opt=command_line_options(def_opt, help_msg)
+   printerr(opt, how='green')          ## showing what is returned by command_line_options
+   if opt['o']:    fh=open(opt['o'], 'w')
+   for repetition in range(opt['n']):
+       for line in open(opt['i']):
+           if opt['o']:    fh.write(line)
+           else:           write(line, end='')
+  
 
 Let's consider a text file called ``oneline.txt``, whose only content is:
 
@@ -225,8 +227,8 @@ and the script would quit with no action afterwards:
    :width: 450
 
 
-:func:`~easyterm.commandlineopt.command_line_options` has many more features (have a look at
-:func:`its documentation<~easyterm.commandlineopt.command_line_options>`), including:
+:func:`~easyterm.commandlineopt.command_line_options` has many more features explained in its documentation,
+ including:
    - positional arguments: without an explicit option name
    - option synonyms: i.e. you may have the user specify ``-input`` or ``-i`` with the same result
    - structured help pages: option ``-h`` may accept an argument to show specific instructions otherwise not displayed
