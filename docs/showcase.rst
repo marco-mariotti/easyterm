@@ -180,7 +180,7 @@ Let's see an example of a python script adopting this model, ``repeat_file.py``:
 
 Let's consider a text file called ``oneline.txt``, whose only content is:
 
-.. code-block:: 
+.. code-block:: bash
 		
   well, there is a single line of text here
 
@@ -226,10 +226,36 @@ and the script would quit with no action afterwards:
 .. image:: images/commandlineopt_showcase.3.png
    :width: 450
 
+The :func:`~easyterm.commandlineopt.command_line_options` function automatically convert arguments to the
+appropriate type, and checks that it is correct for that option. In fact, the ``def_opt`` defines the type
+of value accepted for each single option.
+
+So, for example, if you try to provide a string for the integer option ``-n``
+(since defined in ``def_opt`` as ``3``) , the program will crash:
+
+.. code-block:: bash
+
+   python repeat_file.py -i oneline.txt -n five
+
+.. image:: images/commandlineopt_showcase.4.png
+   :width: 500
+
+There are five accepted argument types:
+
+- integer (``int``)
+- floating point number (``float``)
+- string (``str``)
+- boolean (``bool``): these options can be given on the command line without argument,
+  which results in a ``True`` value. Otherwise, accepted arguments
+  are ``1``, ``T``, ``True`` (all resulting in a ``True`` value),
+  or ``0``, ``F``, ``False`` (resulting in a ``False`` value).
+- list of strings (``list``): these options may accept multiple arguments, which are stored as a python list.
+  For example, a list-type ``-files`` option may be used in command line like this: `` -files a.txt b.txt c.txt ``.
+	   
 
 :func:`~easyterm.commandlineopt.command_line_options` has many more features explained in its documentation,
  including:
-   - positional arguments: without an explicit option name
-   - option synonyms: i.e. you may have the user specify ``-input`` or ``-i`` with the same result
-   - structured help pages: option ``-h`` may accept an argument to show specific instructions otherwise not displayed
+   - **positional arguments**: without an explicit option name
+   - **option synonyms**: i.e. you may have the user specify ``-input`` or ``-i`` with the same result
+   - **advanced help pages**: option ``-h`` may accept an argument to show specific instructions otherwise not displayed
       

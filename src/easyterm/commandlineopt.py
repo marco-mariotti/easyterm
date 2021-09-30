@@ -334,9 +334,9 @@ def command_line_options(default_opt,
                 if expected_type is None:  # if this option was not in default_opt, we cast it to string (unless it had no argument, in which case to bool)
                     expected_type=str
                 if expected_type is bool:
-                    if   arglist[i+1]=='1':
+                    if   arglist[i+1] in ('1', 'T', 'True'):
                         value=True
-                    elif arglist[i+1]=='0':
+                    elif arglist[i+1] in ('0', 'F', 'False'):
                         value=False
                     elif opt_key=='h':
                         if not advanced_help_msg:
