@@ -1,6 +1,6 @@
-import sys, string, copy, re, os, warnings
+import sys, string, copy, re, os, warnings, io, shlex
 from .colorprint import write 
-__all__ = ["command_line_options","NoTracebackError",  "set_up_no_traceback_error"]
+__all__ = ["command_line_options", "read_config_file",  "NoTracebackError",  "set_up_no_traceback_error"]
 
 # "CommandLineOptions", "CommandLineError" 
 
@@ -20,7 +20,7 @@ class CommandLineOptions(dict):
     accepted_option_types=set([bool, int, float, list, str])    
 
     def __repr__(self):
-        max_charlen=max( [ len(k) for k in self] )
+        max_charlen=max( [ len(k) for k in self] ) if self else 0
         return('\n'.join( [f"{k:<{max_charlen}} : {type(self[k]).__name__:<5} = {self[k]}" for k in sorted(self.keys())]) )
     
     def __getitem__(self, name):
@@ -104,13 +104,16 @@ def command_line_options(default_opt,
         when keys are tolerated (see two previous args), normally a warning is printed; set this to False to silence them
     
     advanced_help_msg : dict
-        dictionary defining specialized help messages, which are displayed only when invoked as argument to -h
-        e.g. if you run on the command line ' -h map ', and if within the script you had 
-        advanced_help_msg={'map':'map message'}, then 'map message' is displayed
+        dictionary defining specialized help messages, which are displayed only when invoked as argument to ``-h``
+        e.g. if you run on the command line `` -h map ``, and if within the script you had 
+        ``advanced_help_msg={'map':'map message'}``, then 'map message' is displayed
+        By default, the normal help_msg is also displayed before the specialized one. 
+        Add None as key to ovveride. For example, ``advanced_help_msg={'map':'map message', None:''}`` 
+        will result in only the specialized message printed when ``-h map`` is used
 
     Returns
     -------
-    opt : CommandLineOpt
+    opt : CommandLineOptions
         dictionary like object with structure key:arg, carrying command line options and, if not provided, default values
 
     Examples
@@ -346,7 +349,7 @@ def command_line_options(default_opt,
                         else:
                             value=arglist[i+1] ## accepting non-bool value for -h
                     else:
-                        raise CommandLineError(f"ERROR boolean options can only take values 0, 1 or none. Received: -{opt_key} : {arglist[i+1]}") from None
+                        raise CommandLineError(f"ERROR boolean options can only take values F, False, 0, or T, True, 1, or none. Received: -{opt_key} : {arglist[i+1]}") from None
                 else:
                   try:
                       value= expected_type(  arglist[i+1] ) 
@@ -364,9 +367,14 @@ def command_line_options(default_opt,
 
     ## Printing help message
     if opt['h']:
-        write(help_msg)        
-        if advanced_help_msg and opt['h'] in advanced_help_msg:            
+        if advanced_help_msg and opt['h'] in advanced_help_msg:
+            if not None in advanced_help_msg:
+                write(help_msg)
+            elif advanced_help_msg[None]:
+                write(advanced_help_msg[None])                
             write(advanced_help_msg[opt['h']])
+        else:
+            write(help_msg)        
             
     if opt['print_opt']:
         write(opt)
@@ -375,6 +383,132 @@ def command_line_options(default_opt,
         sys.exit()            
 
     return(opt)
+
+
+
+
+def read_config_file(fileh_or_path, types_from=None, sep='=', comment_char='#'):
+    """Reads parameters from a configuration file
+
+    The file is expected to have a structure like:
+    ``option_name1 = value``
+    ``option_name2 = another value``
+
+    The file may contain any number of empty lines and comments (i.e. lines that start with #)    
+
+    This function may be used in combination with command_line_options to have different levels
+    of default values:
+      1) built-in in your scripts
+      2) defined in (editable) configuration file
+      3) specified when running the script on the command line
+    Check the scripts in the templates/ folder of easyterm github for examples.
+    
+    Parameters
+    ----------
+    
+    fileh_or_path : file | str 
+        file path specification or buffer of configuration file to be loaded
+
+    types_from : dict | CommandLineOptions, optional
+        If provided, this dictionary or dict-like object is used to infer the expected types of value
+        for each key (=parameter name). Values are coerced to the type of values provided in this dictionary,
+        and an exception is raised if conversion fails.
+        Note: the type of the values of the types_from argument are used! Do not provide types directly as values.
+        In a combined read_config_file / command_line_options set-up, def_opt is used here (see examples below)
+
+
+    sep : str
+        defines which separator is used between the option_name and the value in the configuration file.
+        Defaults to ``=``
+
+    comment_char : str
+        lines starting with this characters are ignored.
+        Defaults to ``#``
+
+    Returns
+    -------
+    opt : CommandLineOptions
+        dictionary like object with structure key:arg, carrying options loaded from the file
+
+    Examples
+    --------
+    Showing the content of an example config file:
+    >>> for line in open('example_config.txt'):
+    ...   print(line)
+    ## this is a config file
+    i = inputfile
+    o = outputfile
+    n = 56
+
+    >>> read_config_file('example_config.txt')
+    i : str   = inputfile
+    n : str   = 56
+    o : str   = outputfile
+
+    Using a default opt to coerce types:
+    >>> def_opt={'i':'inputfile',  'n':5,  'o':''}
+    ... read_config_file('example_config.txt', types_from=def_opt)
+    i : str   = inputfile
+    n : int   = 56
+    o : str   = outputfile
+
+    **Combining read_config_file and command_line_opt**
+    Options have built-in values (initial ``def_opt``).
+    Some may be overriden by a configuration file (``conf_opt``). 
+    Then again, some may be overriden by command line options (``final opt``)
+    >>> def_opt = {'i':'inputfile',  'n':5,  'o':''}
+    ... conf_opt = read_config_file('example_config.txt', types_from=def_opt)
+    ... def_opt.update(conf_opt)  
+    ... opt=command_line_opt(def_opt, help_msg='Command line usage: ...')
+
+    """
+    out=CommandLineOptions()
+    with (fileh_or_path if isinstance(fileh_or_path, io.IOBase)
+           else open(fileh_or_path)) as iter_lines:
+
+        for line_index, line in enumerate(iter_lines):
+            s=line.strip()
+            if not s or s.startswith(comment_char): continue
+            pos_sep=s.find(sep)
+            if pos_sep==-1:
+                raise CommandLineError(f'read_config_file ERROR reading file {fileh_or_path} at row n.{line_index}: {line}')
+            key=  s[:pos_sep].strip()
+            value=s[pos_sep+1:].strip()
+             
+            if ( len(value)>1 and 
+                 any([value.startswith(q) and value.endswith(q) for q in "'\""]) ):
+                value=value[1:-1]                 # dealing with quoted strings arguments
+
+            if not types_from is None:
+                if not key in types_from:
+                    raise CommandLineError( (f"read_config_file ERROR types_from does not contain the key '{key}' found in config file {fileh_or_path}") )
+                expected_type=type(types_from[key])
+                if not expected_type in CommandLineOptions.accepted_option_types:
+                    raise CommandLineError( (f"ERROR Only these value types are "
+                                             f"accepted: {CommandLineOptions.accepted_option_types} "
+                                             f"-- Instead it was provided {expected_type} for -{key}"))
+                try:
+                    if   expected_type is bool:
+                        if   value in ('1', 'T', 'True'):
+                            value=True
+                        elif value in ('0', 'F', 'False'):
+                            value=False
+                        else:
+                            raise CommandLineError(f"ERROR boolean options can only take values F, False, 0, or T, True, 1, or none. Received: -{key} : {value}") from None                        
+                    elif expected_type is list:
+                        value=shlex.split(value)   ## allowing complex quoted structures
+                    elif expected_type in (float, int):
+                        value=expected_type(value)
+                    elif expected_type is str:
+                        pass
+                except error:
+                    printerr(f'read_config_file ERROR reading file {fileh_or_path} at row n.{line_index}: {line}')
+                    raise error from None
+                
+            out[key]=value
+    return out
+        
+                
 
 def match_any_word(main_string, word_list, is_pattern=True, ignore_case=True):
   """ Given a string and a list of strings/perl_patterns, it returns True is any of them matches the string, False otherwise  """
