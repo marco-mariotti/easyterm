@@ -125,7 +125,7 @@ def command_line_options(default_opt,
 
     .. code-block:: python
 
-        command_line_options( default_opt={'i': 'input', 'o':'output', 'param':3} ) 
+        opt=command_line_options( default_opt={'i': 'input', 'o':'output', 'param':3} ) 
 
     Then, when your script is run with this command line (in bash or analogous):
 
@@ -155,7 +155,7 @@ def command_line_options(default_opt,
 
     With::
 
-        command_line_options( default_opt={'param':3, 'files':[]},  synonyms={'p':'param'})
+        opt=command_line_options( default_opt={'param':3, 'files':[]},  synonyms={'p':'param'})
 
     This command line:
 
@@ -172,7 +172,7 @@ def command_line_options(default_opt,
 
     With::
 
-        command_line_options( default_opt={'i':'', 'o':'', 's':'', 'k':5.5},  positional_keys=['i', 'o'])
+        opt=command_line_options( default_opt={'i':'', 'o':'', 's':'', 'k':5.5},  positional_keys=['i', 'o'])
 
     This command line:
 
@@ -203,6 +203,16 @@ def command_line_options(default_opt,
     Results in::
 
         {'i':'in1', 'o':'', 's':'multi char str', 'k':5.5}  # multiword string as arg
+
+    Note that, while the object returned by command_line_options is a dictionary, it is subclassed
+    and implements its own representation function, so that if you actually try to print it, you would get
+    something like:
+    
+    >>> print( opt )
+    i : str     = in1
+    k : float   = 5.5
+    o : str     = 
+    s : str     = multi char str
     """
     
     default_opt=CommandLineOptions(default_opt)
@@ -391,7 +401,9 @@ def read_config_file(fileh_or_path, types_from=None, sep='=', comment_char='#'):
     """Reads parameters from a configuration file
 
     The file is expected to have a structure like:
+
     ``option_name1 = value``
+
     ``option_name2 = another value``
 
     The file may contain any number of empty lines and comments (i.e. lines that start with #)    
@@ -433,6 +445,7 @@ def read_config_file(fileh_or_path, types_from=None, sep='=', comment_char='#'):
     Examples
     --------
     Showing the content of an example config file:
+
     >>> for line in open('example_config.txt'):
     ...   print(line)
     ## this is a config file
