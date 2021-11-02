@@ -70,7 +70,9 @@ def command_line_options(default_opt,
                          tolerate_extra=False,
                          tolerated_regexp=[],
                          warning_extra=True,
-                         advanced_help_msg={}):
+                         advanced_help_msg={},
+                         arglist=None,
+                         add_defaults=True):
     """Reads command line arguments and returns them after filling with default values
     
     Here below, we refer to option names as *keys* (e.g. the "i" in "program.py -i inputfile" ),
@@ -110,6 +112,14 @@ def command_line_options(default_opt,
         By default, the normal help_msg is also displayed before the specialized one. 
         Add None as key to ovveride. For example, ``advanced_help_msg={'map':'map message', None:''}`` 
         will result in only the specialized message printed when ``-h map`` is used
+
+    arglist : list, optional
+        normally options are read from sys.argv, which is automatically filled from command line arguments.
+        Use arglist to provide an analogous list of strings instead
+
+    add_defaults : bool
+        normally those options not specified on the command line are taken from def_opt. 
+        Set add_defaults=False to simply omit them from the output
 
     Returns
     -------
@@ -221,7 +231,7 @@ def command_line_options(default_opt,
             default_opt[builtin_opt]=False
 
     opt=CommandLineOptions()
-    arglist=sys.argv[1:]
+    arglist=sys.argv[1:] if arglist is None else arglist
     synonyms['help']='h'                   # built-in synonym
 
     ## checking default_opt and positional_keys
@@ -370,10 +380,11 @@ def command_line_options(default_opt,
             value=[arglist[vi] for vi in vis]  # list of strings
         opt[opt_key]=value
 
-    ## adding default values which were not specified in command line
-    for opt_key in default_opt:
-        if not opt_key in opt:
-            opt[opt_key]=copy.copy(default_opt[opt_key])
+    if add_defaults:
+      ## adding default values which were not specified in command line
+      for opt_key in default_opt:
+          if not opt_key in opt:
+              opt[opt_key]=copy.copy(default_opt[opt_key])
 
     ## Printing help message
     if opt['h']:
