@@ -110,7 +110,7 @@ without changing line, for example to monitor progress status::
 .. image:: images/colorprint.service.gif
    :width: 350
    
-With service, it is straightforward to visualize a progress bar::
+With :func:`~easyterm.colorprint.service`, it is straightforward to visualize a progress bar::
 
     >>> barlength=50
     ... nsteps=300
@@ -139,8 +139,8 @@ Reading options from the command line
 
 Python offers various tools to read options provided as you run your script through the command line
 (e.g. `argparse <https://docs.python.org/3/library/argparse.html>`_,
-`getopt <https://docs.python.org/3/library/getopt.html>`_). Although powerful, these methods are not
-concise and often require lots of code for rather basic functionalities, for example to produce a well formatted help page.
+`getopt <https://docs.python.org/3/library/getopt.html>`_). Although powerful, these methods often
+require lots of code for rather basic functionalities.
 
 The easyterm :doc:`commandlineopt` provides a function to make managing command line options as straightforward as it gets:
 :func:`~easyterm.commandlineopt.command_line_options`. 
@@ -170,7 +170,12 @@ Let's see an example of a python script adopting this model, ``repeat_file.py``:
   		   -n  number of repetitions"""
    		   
    opt=command_line_options(def_opt, help_msg)
+   # that's it! the dict-like object opt contains current options
+
+   # printing it:
    printerr(opt, how='green')          ## showing what is returned by command_line_options
+
+   # program code: open an inputfile, printing its content N times
    if opt['o']:    fh=open(opt['o'], 'w')
    for repetition in range(opt['n']):
        for line in open(opt['i']):
@@ -227,8 +232,8 @@ and the script would quit with no action afterwards:
    :width: 450
 
 The :func:`~easyterm.commandlineopt.command_line_options` function automatically convert arguments to the
-appropriate type, and checks that it is correct for that option. In fact, the ``def_opt`` defines the type
-of value accepted for each single option.
+appropriate type, and checks that it is correct for that option. The ``def_opt`` defines the type
+of value accepted for each option.
 
 So, for example, if you try to provide a string for the integer option ``-n``
 (since defined in ``def_opt`` as ``3``) , the program will crash:
@@ -256,6 +261,89 @@ There are five accepted argument types:
 The function :func:`~easyterm.commandlineopt.command_line_options` has many more features
 explained in its documentation, including:
    - **positional arguments**: without an explicit option name
-   - **option synonyms**: i.e. you may have the user specify ``-input`` or ``-i`` with the same result
+   - **option synonyms**: e.g. you may have the user specify ``-input`` or ``-i`` with the same result
    - **advanced help pages**: option ``-h`` may accept an argument to show specific instructions otherwise not displayed
       
+Easyterm provides a number of template scripts of increasing complexity, complete with comments, to showcase useful
+features it provides. Check them in the `github page <https://github.com/marco-mariotti/easyterm>`_ or in your
+installation folder.
+     
+Reading options from a configuration file
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     
+Easyterm provides a complementary approach to reading options from command line: reading them
+from a configuration file. While the user is free to combine these possibilities in any order,
+it was developed with a hierarchy in mind:
+   #. *def_opt* defines the built-in default options, and their type
+   #. the configuration file overrides (some of the) options with user-specific defaults
+   #. command line options override (some of the) options with runtime-specific arguments
+
+The function :func:`~easyterm.commandlineopt.read_config_file` takes a file path or buffer as argument,
+and returns a dictionary-like object analogous to that returned by
+:func:`~easyterm.commandlineopt.command_line_options`. Function :func:`~easyterm.commandlineopt.read_config_file`
+also takes an optional `types_from` argument, which converts to the right type all arguments read
+from the configuration file. It is meant to accept *def_opt* as argument.
+
+A configuration file read by :func:`~easyterm.commandlineopt.read_config_file` has the following format::
+  
+  option_name = its_argument
+  # it can contain any number of comments
+  # ... and any number of empty lines
+  
+  another_option =   a single string including spaces
+  an_integer_option = 14
+  
+  # arguments of list-type options are split using space as separator
+  a_list_option =  arg1 arg2 arg3  arg4
+  
+
+Let's now combine :func:`~easyterm.commandlineopt.read_config_file` and :func:`~easyterm.commandlineopt.command_line_options`
+to produce the hierarchy outline above::
+
+  >>> def_opt = {'i':'inputfile',  'n':5,  'o':''}
+  ... conf_opt = read_config_file('example_config.txt', types_from=def_opt)
+  ... def_opt.update(conf_opt)
+  ... opt=command_line_opt(def_opt, help_msg='Command line usage: ...')
+  
+
+
+Raise an exception without traceback
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Python ``Exceptions`` are an elegant way to control for errors, and trace their occurrence in
+your code. When an error occurs in python, an exception is *raised*. Also, exceptions can be
+explicitly raised by the programmer, for a variety of uses.
+When an exception is raised, typically the program will crash showing a traceback message (printed on standard error).
+For example, if you were to run this program::
+
+  for i in range(5):
+    print(i)
+    raise Exception('This is a normal exception')
+    
+Then you would get something like::
+
+  0
+  Traceback (most recent call last):
+    File "t.py", line 3, in <module>
+        raise Exception('This is a normal exception')
+	Exception: This is a normal exception
+
+
+The traceback is one of the coolest features of python. But in some cases, it is a bit too noisy:
+sometimes you just want to tell the user that some input was not ok, for example.
+
+Easyterm provides an Exception subclass called :class:`~easyterm.commandlineopt.NoTracebackError`.
+When raised, the usual traceback shown by the python interpreted is omitted, and just the exception message
+is printed to standard error. For example, if you run this program::
+  
+  from easyterm import NoTracebackError
+  for i in range(5):
+    print(i)
+    raise NoTracebackError('This is a message without traceback')
+
+The output you see on the command line will be just::
+
+  0
+  This is a message without traceback
+
+As for the python built-in ``Exception``, :class:`~easyterm.commandlineopt.NoTracebackError` is instanced
+with the error message as its argument.
+  

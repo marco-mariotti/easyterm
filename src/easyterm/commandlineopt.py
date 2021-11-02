@@ -65,7 +65,7 @@ set_up_no_traceback_error()
 
 def command_line_options(default_opt,
                          help_msg='Command line usage:...',
-                         positional_keys='io',
+                         positional_keys='',
                          synonyms={},
                          tolerate_extra=False,
                          tolerated_regexp=[],
@@ -232,7 +232,9 @@ def command_line_options(default_opt,
 
     opt=CommandLineOptions()
     arglist=sys.argv[1:] if arglist is None else arglist
-    synonyms['help']='h'                   # built-in synonym
+    for h in ('help', '-help'):
+        synonyms[h]='h'                   # built-in synonym
+        
 
     ## checking default_opt and positional_keys
     for opt_key in default_opt:
@@ -470,6 +472,7 @@ def read_config_file(fileh_or_path, types_from=None, sep='=', comment_char='#'):
     o : str   = outputfile
 
     Using a default opt to coerce types:
+
     >>> def_opt={'i':'inputfile',  'n':5,  'o':''}
     ... read_config_file('example_config.txt', types_from=def_opt)
     i : str   = inputfile
@@ -477,9 +480,11 @@ def read_config_file(fileh_or_path, types_from=None, sep='=', comment_char='#'):
     o : str   = outputfile
 
     **Combining read_config_file and command_line_opt**
+
     Options have built-in values (initial ``def_opt``).
     Some may be overriden by a configuration file (``conf_opt``). 
-    Then again, some may be overriden by command line options (``final opt``)
+    Then again, some may be overriden by command line options (``opt``):
+
     >>> def_opt = {'i':'inputfile',  'n':5,  'o':''}
     ... conf_opt = read_config_file('example_config.txt', types_from=def_opt)
     ... def_opt.update(conf_opt)  
