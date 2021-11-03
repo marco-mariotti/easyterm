@@ -27,6 +27,18 @@ class CommandLineOptions(dict):
         if name in self:            return dict.__getitem__(self, name)
         else:                       return None
 
+    def write_config_file(self, fileh_or_path, sep='=', ordered_keys=None):
+        """Write options into a format that can be later read with read_config_file"""
+        with (fileh_or_path if isinstance(fileh_or_path, io.IOBase)
+              else open(fileh_or_path, 'w')) as fhw:
+            ordered_keys=ordered_keys if ordered_keys is not None else sorted(self.keys())
+            for key in ordered_keys:
+                value=self[key]
+                if type(value) is list:
+                    fhw.write(f'{key} {sep} {" ".join(value)}\n')
+                else:
+                    fhw.write(f'{key} {sep} {value}\n')
+        
         
 class NoTracebackError(Exception):
     """Exception class which, when raised, shows the error message only, without traceback.
@@ -229,6 +241,10 @@ def command_line_options(default_opt,
     for builtin_opt in ['h', 'print_opt']:
         if not builtin_opt in default_opt:
             default_opt[builtin_opt]=False
+        elif type(default_opt[builtin_opt]) is not bool:
+            default_opt[builtin_opt]=(False
+                                       if default_opt[builtin_opt] in ('', '0', 'F', 'False', 0, 0.0)
+                                       else True)
 
     opt=CommandLineOptions()
     arglist=sys.argv[1:] if arglist is None else arglist

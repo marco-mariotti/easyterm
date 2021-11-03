@@ -1,13 +1,12 @@
 #! /usr/bin/env python3
 from easyterm import command_line_options, printerr, write, check_file_presence
 
-help_msg="""
-### Input/output:
--i   define inputfile [same as providing it as the 1st argument]
+help_msg=""" This program does something.
 
 ### Options:
--print_opt      print currently active options
--h | --help    print this help and exit"""
+-i            define inputfile [or provide it as 1st argument]
+-print_opt    print currently active options
+-h | --help   print this help and exit"""
 
 # fill def_opt with default options
 def_opt= {'i':'inputfile'}
