@@ -11,7 +11,7 @@ python and bash terminal.
 
   - Check :doc:`installation` to install easyterm
   - Visit the :doc:`showcase page<showcase>` for a tour of the features it offers
-  - Have a look at the `template scripts<https://github.com/marco-mariotti/easyterm/tree/main/templates>`_
+  - Have a look at the `template scripts <https://github.com/marco-mariotti/easyterm/tree/main/templates>`_
     to have concrete examples which adopt the easyterm philosophy
 
 In the following pages, you can also check the full documentation of all functions:
@@ -20,7 +20,7 @@ In the following pages, you can also check the full documentation of all functio
   - Check :doc:`commandlineopt` for reading command line options in a straightforward way
   - Check :doc:`commandutils` for utilities such as creating random temporary folders, running bash commands, and more.
 
-If you have any problems with easyterm, submit an issue at the `github page<https://github.com/marco-mariotti/easyterm/issues>`_.
+If you have any problems with easyterm, submit an issue at the `github page <https://github.com/marco-mariotti/easyterm/issues>`_.
     
 .. toctree::
    :maxdepth: 1
