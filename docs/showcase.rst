@@ -353,5 +353,5 @@ Template scripts
 Easyterm provides a few pre-made template scripts, which show how functionalities are used in practice.
 Template scripts are numbered in order of increasing complexity. Their help message briefly explain the functionalities included.
 
-Check them out at `the templates page<https://github.com/marco-mariotti/easyterm/tree/main/templates>`_ or
+Check them out at `the templates page <https://github.com/marco-mariotti/easyterm/tree/main/templates>`_ or
 inside your local installation directory.
