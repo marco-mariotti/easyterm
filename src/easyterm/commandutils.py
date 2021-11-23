@@ -1,7 +1,8 @@
 import os, hashlib, subprocess, shlex, uuid, re
 from .commandlineopt import NoTracebackError
 
-__all__ = ["md5sum_of_file", "check_file_presence", "checksum_of_file", "random_folder"]
+__all__ = ["md5sum_of_file", "check_file_presence", "checksum_of_file", "random_folder",
+           "run_cmd", "mask_chars", "unmask_chars"]
 
 def check_file_presence(input_file, descriptor='input_file', exception_raised=NoTracebackError):
     """Check if file exists. If it doesn't, raises a IOError exception
