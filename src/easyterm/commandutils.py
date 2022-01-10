@@ -97,7 +97,7 @@ def run_cmd(cmd, err_crash=True, **keyargs):
     """Utility function to run bash commands.
 
     This function wraps subprocess.run for its most common usage
-    (according to easyterm developer, at least!).
+    (according to the easyterm developer, anyhow).
     You can provide any of subprocess.run options to modify its behaviour.
     
     The input is the string of the command you would run in a terminal.
@@ -130,8 +130,11 @@ def run_cmd(cmd, err_crash=True, **keyargs):
     default_keyargs={'stdout':subprocess.PIPE, 'stderr':subprocess.STDOUT, 'text':True}
     for k, v in default_keyargs.items():
         keyargs.setdefault(k, v)
+    to_run=(shlex.split(cmd)
+            if not ('shell' in keyargs and keyargs['shell'])
+            else cmd)
     try:
-        p=subprocess.run(shlex.split(cmd), **keyargs)
+        p=subprocess.run(to_run, **keyargs)
         if err_crash and p.returncode!=0:
             raise Exception(f'\nWhile running command= {cmd}\nThere was ERROR= {p.stdout}')
 

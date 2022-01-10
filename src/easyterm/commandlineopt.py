@@ -264,7 +264,7 @@ def command_line_options(default_opt,
                                               f"contain string values only! Instead this was "
                                               f"provided for -{opt_key} : {default_opt[opt_key]}"))        
     if len([pk for pk in positional_keys if not pk in default_opt]):
-        raise CommandLineError((f"ERROR positional keys provided are absent from default option: "
+        raise CommandLineError((f"ERROR positional keys provided are absent from default options: "
                                 f"{' '.join(['-'+pk for pk in positional_keys if not pk in default_opt])}"))
 
     
