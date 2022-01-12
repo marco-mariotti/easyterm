@@ -106,8 +106,8 @@ def run_cmd(cmd, err_crash=True, **keyargs):
 
     Parameters
     ----------
-    cmd : str
-        command, just as you would run in a terminal
+    cmd : str | list 
+        command, just as you would run in a terminal, or list of command and arguments
 
     err_crash : bool, optional
         if err_crash==True (default) and the process fails (exitcode!=0), an exception is raised
@@ -130,9 +130,9 @@ def run_cmd(cmd, err_crash=True, **keyargs):
     default_keyargs={'stdout':subprocess.PIPE, 'stderr':subprocess.STDOUT, 'text':True}
     for k, v in default_keyargs.items():
         keyargs.setdefault(k, v)
-    to_run=(shlex.split(cmd)
-            if not ('shell' in keyargs and keyargs['shell'])
-            else cmd)
+    to_run=(cmd
+            if type(cmd) is list or ('shell' in keyargs and keyargs['shell'])
+            else shlex.split(cmd))
     try:
         p=subprocess.run(to_run, **keyargs)
         if err_crash and p.returncode!=0:
