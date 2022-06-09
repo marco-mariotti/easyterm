@@ -127,7 +127,7 @@ def run_cmd(cmd, err_crash=True, **keyargs):
     To separate them instead, use stderr=subprocess.PIPE
 
     """
-    default_keyargs={'stdout':subprocess.PIPE, 'stderr':subprocess.STDOUT, 'text':True}
+    default_keyargs={'stdout':subprocess.PIPE, 'stderr':subprocess.STDOUT, 'universal_newlines':True}
     for k, v in default_keyargs.items():
         keyargs.setdefault(k, v)
     to_run=(cmd
