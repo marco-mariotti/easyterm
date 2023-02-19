@@ -271,17 +271,16 @@ installation folder.
 Reading options from a configuration file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     
 Easyterm provides a complementary approach to reading options from command line: reading them
-from a configuration file. While the user is free to combine these possibilities in any order,
-it was developed with a hierarchy in mind:
-   #. *def_opt* defines the built-in default options, and their type
-   #. the configuration file overrides (some of the) options with user-specific defaults
+from a configuration file. The function :func:`~easyterm.commandlineopt.read_config_file` takes a
+file path or buffer as argument, and returns a dictionary-like object analogous to that returned by
+:func:`~easyterm.commandlineopt.command_line_options`.
+
+While developers are free to use this function as they see fit, it was developed with this structure in mind:
+
+   #. the configuration file defines options and their default values
    #. command line options override (some of the) options with runtime-specific arguments
 
-The function :func:`~easyterm.commandlineopt.read_config_file` takes a file path or buffer as argument,
-and returns a dictionary-like object analogous to that returned by
-:func:`~easyterm.commandlineopt.command_line_options`. Function :func:`~easyterm.commandlineopt.read_config_file`
-also takes an optional `types_from` argument, which converts to the right type all arguments read
-from the configuration file. It is meant to accept *def_opt* as argument.
+In other words, the configuration file is used to build an object analogous to *def_opt*.
 
 A configuration file read by :func:`~easyterm.commandlineopt.read_config_file` has the following format::
   
@@ -290,20 +289,23 @@ A configuration file read by :func:`~easyterm.commandlineopt.read_config_file` h
   # ... and any number of empty lines
   
   another_option =   a single string including spaces
-  an_integer_option = 14
+
+  # options with value types other than a string must include a type specification:
+  an_integer_option :int = 14
+  a_float_option  :float =  5.0
+  a_boolean_option :bool = True     
   
-  # arguments of list-type options are split using space as separator
-  a_list_option =  arg1 arg2 arg3  arg4
-  
+  # arguments of list-type options are split using space as separator:
+  a_list_option :list =  arg1 arg2 arg3  arg4
+
+  # for list elements composed of multiple words, use quotes:
+  list_option2 :list =  arg1 arg2 'this is arg3' arg4  
 
 Let's now combine :func:`~easyterm.commandlineopt.read_config_file` and :func:`~easyterm.commandlineopt.command_line_options`
 to produce the hierarchy outline above::
 
-  >>> def_opt = {'i':'inputfile',  'n':5,  'o':''}
-  ... conf_opt = read_config_file('example_config.txt', types_from=def_opt)
-  ... def_opt.update(conf_opt)
-  ... opt=command_line_opt(def_opt, help_msg='Command line usage: ...')
-  
+  >>> conf_opt = read_config_file('example_config.txt')
+  ... opt=command_line_opt(conf_opt, help_msg='Command line usage: ...')  
 
 
 Raise an exception without traceback
@@ -353,5 +355,4 @@ Template scripts
 Easyterm provides a few pre-made template scripts, which show how functionalities are used in practice.
 Template scripts are numbered in order of increasing complexity. Their help message briefly explain the functionalities included.
 
-Check them out at `the templates page <https://github.com/marco-mariotti/easyterm/tree/main/templates>`_ or
-inside your local installation directory.
+Check them out at `the templates page <https://github.com/marco-mariotti/easyterm/tree/main/templates>`_.

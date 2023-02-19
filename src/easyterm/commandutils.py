@@ -1,10 +1,20 @@
 import os, hashlib, subprocess, shlex, uuid, re
 from .commandlineopt import NoTracebackError
 
-__all__ = ["md5sum_of_file", "check_file_presence", "checksum_of_file", "random_folder",
-           "run_cmd", "mask_chars", "unmask_chars"]
+__all__ = [
+    "md5sum_of_file",
+    "check_file_presence",
+    "checksum_of_file",
+    "random_folder",
+    "run_cmd",
+    "mask_chars",
+    "unmask_chars",
+]
 
-def check_file_presence(input_file, descriptor='input_file', exception_raised=NoTracebackError):
+
+def check_file_presence(
+    input_file, descriptor="input_file", exception_raised=NoTracebackError
+):
     """Check if file exists. If it doesn't, raises a IOError exception
 
     Parameters
@@ -24,8 +34,13 @@ def check_file_presence(input_file, descriptor='input_file', exception_raised=No
         None
     """
     if not input_file or not os.path.isfile(input_file):
-        raise(exception_raised(f"ERROR {descriptor}: {input_file} not defined or not found. Run with option -h for help."))
-    
+        raise (
+            exception_raised(
+                f"ERROR {descriptor}: {input_file} not defined or not found. Run with option -h for help."
+            )
+        )
+
+
 def md5sum_of_file(filename, chunksize=4096):
     """Gets md5sum of content of a file
 
@@ -38,12 +53,13 @@ def md5sum_of_file(filename, chunksize=4096):
     -------    
     md5sum : str
         md5sum of file
-    """    
+    """
     hash_md5 = hashlib.md5()
     with open(filename, "rb") as f:
         for chunk in iter(lambda: f.read(chunksize), b""):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
+
 
 def checksum_of_file(filename):
     """ Gets checksum of content of a file, using program 'sum'
@@ -57,14 +73,13 @@ def checksum_of_file(filename):
     -------
     (sum1, sum2) : (int, int)
         checksum of file
-    """        
-    p = subprocess.run(['sum', filename],
-                       capture_output=True,
-                       check=True)
-    int1, int2=map(int, p.stdout.decode().strip().split())
-    return( (int1, int2) )
+    """
+    p = subprocess.run(["sum", filename], capture_output=True, check=True)
+    int1, int2 = map(int, p.stdout.decode().strip().split())
+    return (int1, int2)
 
-def random_folder(parent_folder='./', mkdir=True):
+
+def random_folder(parent_folder="./", mkdir=True):
     """Generate a random folder name, create it inside parent_folder, and return the path to it
 
     Parameters
@@ -81,17 +96,20 @@ def random_folder(parent_folder='./', mkdir=True):
         path to newly created random folder (whose name will look like 57eb3f2416bc4c5d9d34a17751c97362)
 
     """
-    parent_folder=parent_folder.rstrip('/')+'/'
+    parent_folder = parent_folder.rstrip("/") + "/"
     if not os.path.isdir(parent_folder):
-        raise Exception(f'random folder ERROR the parent folder does not exist: {parent_folder}')
-    
-    random_name=uuid.uuid4().hex # style: 57eb3f2416bc4c5d9d34a17751c97362
-    random_folder_created=parent_folder + random_name
-    
+        raise Exception(
+            f"random folder ERROR the parent folder does not exist: {parent_folder}"
+        )
+
+    random_name = uuid.uuid4().hex  # style: 57eb3f2416bc4c5d9d34a17751c97362
+    random_folder_created = parent_folder + random_name
+
     if mkdir:
-        os.mkdir( random_folder_created )
-        
+        os.mkdir(random_folder_created)
+
     return random_folder_created
+
 
 def run_cmd(cmd, err_crash=True, **keyargs):
     """Utility function to run bash commands.
@@ -127,29 +145,42 @@ def run_cmd(cmd, err_crash=True, **keyargs):
     To separate them instead, use stderr=subprocess.PIPE
 
     """
-    default_keyargs={'stdout':subprocess.PIPE, 'stderr':subprocess.STDOUT, 'universal_newlines':True}
+    default_keyargs = {
+        "stdout": subprocess.PIPE,
+        "stderr": subprocess.STDOUT,
+        "universal_newlines": True,
+    }
     for k, v in default_keyargs.items():
         keyargs.setdefault(k, v)
-    to_run=(cmd
-            if type(cmd) is list or ('shell' in keyargs and keyargs['shell'])
-            else shlex.split(cmd))
+    to_run = (
+        cmd
+        if type(cmd) is list or ("shell" in keyargs and keyargs["shell"])
+        else shlex.split(cmd)
+    )
     try:
-        p=subprocess.run(to_run, **keyargs)
-        if err_crash and p.returncode!=0:
-            raise Exception(f'\nWhile running command= {cmd}\nThere was ERROR= {p.stdout}')
+        p = subprocess.run(to_run, **keyargs)
+        if err_crash and p.returncode != 0:
+            raise Exception(
+                f"\nWhile running command= {cmd}\nThere was ERROR= {p.stdout}"
+            )
 
     except FileNotFoundError:
         if err_crash:
-            raise Exception(f'\nWhile running command= {cmd}\nThere was ERROR= FileNotFoundError, '
-                            f'which means that the command was not found!') from None
+            raise Exception(
+                f"\nWhile running command= {cmd}\nThere was ERROR= FileNotFoundError, "
+                f"which means that the command was not found!"
+            ) from None
 
     return p
 
 
 def _mask_replace(match):
-    return '{ch'+str(ord(match.group()))+'}'
+    return "{ch" + str(ord(match.group())) + "}"
+
+
 def _unmask_replace(match):
     return chr(int(match.group(1)))
+
 
 def mask_chars(astring):
     """Replace potentially problematic characters in a string so that it can be used as filename.
@@ -184,8 +215,9 @@ def mask_chars(astring):
     See also
     --------
     unmask_chars
-    """    
-    return re.sub(r'[^a-zA-Z0-9 ]', _mask_replace, astring).replace(' ', '_')
+    """
+    return re.sub(r"[^a-zA-Z0-9 ]", _mask_replace, astring).replace(" ", "_")
+
 
 def unmask_chars(mstring):
     """Reverses function mask_chars.
@@ -217,5 +249,4 @@ def unmask_chars(mstring):
     --------
     mask_chars
     """
-    return re.sub(r'\{ch(\d+)\}', _unmask_replace,  mstring.replace('_', ' ') )
-
+    return re.sub(r"\{ch(\d+)\}", _unmask_replace, mstring.replace("_", " "))
