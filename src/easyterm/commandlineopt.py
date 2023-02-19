@@ -24,6 +24,18 @@ class CommandLineOptions(dict):
     Two differences with dict:
      - its representation looks good on screen
      - requesting a key which is absent returns None, instead of throwing an error
+    
+    Methods:
+     - resolve_links: assign values that were specified based on other options using a str.format compatible expression.
+
+     e.g. if opt is like:
+     option1 = {option2}.extension
+     option2 = somefile  
+
+     After opt.resolve_links() you have:
+     option1 = somefile.extension
+     option2 = somefile
+
     """
 
     accepted_option_chars = set(string.ascii_uppercase + string.ascii_lowercase)
@@ -60,6 +72,26 @@ class CommandLineOptions(dict):
                     fhw.write(f'{key} {sep} {" ".join(value)}\n')
                 else:
                     fhw.write(f"{key} {sep} {value}\n")
+
+    def resolve_links(self):
+        """ Looks at any values containing expression as {something}. These expressions are replaced with the value of option named "something".
+        This operation is performed in-place
+        Circular definitions are resolved in alphabeticalorder
+        """
+        #
+        to_interpret = [
+            k
+            for k in sorted(self.keys())
+            if type(self[k]) is str and re.search(r"{[^{} ]+}", self[k])
+        ]
+        while len(to_interpret):
+            for k in to_interpret:
+                self[k] = self[k].format(**self)
+            to_interpret = [
+                k
+                for k in sorted(self.keys())
+                if type(self[k]) is str and re.search(r"{[^{} ]+}", self[k])
+            ]
 
 
 typestr2type = {k.__name__: k for k in CommandLineOptions.accepted_option_types}
